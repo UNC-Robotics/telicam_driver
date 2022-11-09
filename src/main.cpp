@@ -17,6 +17,8 @@ int main(int argc, char **argv)
     TeliCam::Parameters cam_params;
 
     cam.initialize(cam_params);
+    cam.print_system_info();
+    cam.print_camera_info();
     cam.start_stream();
 
     cv::namedWindow("Telicam", cv::WINDOW_AUTOSIZE);

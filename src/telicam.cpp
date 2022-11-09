@@ -161,7 +161,6 @@ void TeliCam::get_camera_parameter_limits()
 
     // Framerate
     Teli::GetCamAcquisitionFrameRateMinMax(cam_handle, &min_framerate, &max_framerate);
-    std::cout << "Framerate min: " << min_framerate << " max: " << max_framerate << std::endl;
 }
 
 void TeliCam::set_camera_parameters(Parameters parameters)
