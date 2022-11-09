@@ -7,7 +7,7 @@ bool TeliCam::api_initialized = false;
 Teli::CAM_SYSTEM_INFO TeliCam::sys_info = Teli::CAM_SYSTEM_INFO();
 uint32_t TeliCam::num_cameras = 0;
 
-TeliCam::TeliCam(int camera_index) : cam_id(camera_index), camera_initialized(false)
+TeliCam::TeliCam(int camera_index) : cam_id(camera_index), camera_initialized(false), camera_stream_opened(false)
 {
 }
 
@@ -15,7 +15,6 @@ void TeliCam::initialize(const Parameters &parameters)
 {
     if (camera_initialized)
     {
-        close_camera_stream();
         close_camera();
     }
 
@@ -27,36 +26,67 @@ void TeliCam::initialize(const Parameters &parameters)
     get_camera_parameter_limits();
     set_camera_parameters(parameters);
     get_camera_properties();
+    open_stream();
+
+    // Allocate all black image to last_frame
+    last_frame = cv::Mat(height, width, CV_8UC1, cv::Scalar(0));
 }
 
-void TeliCam::start()
+void TeliCam::start_stream()
 {
-    open_camera_stream();
-    start_stream();
+    if (camera_stream_opened) return;
+
+    start_stream_internal();
+    camera_stream_opened = true;
 }
 
-void TeliCam::stop()
+void TeliCam::capture_frame()
 {
-    stop_stream();
-    close_camera_stream();
+    capture_frame_internal();
+}
+
+void TeliCam::stop_stream()
+{
+    if (!camera_stream_opened) return;
+
+    stop_stream_internal();
 }
 
 void TeliCam::destroy()
 {
-    close_camera_stream();
+    if (camera_stream_opened)
+    {
+        TeliCam::stop_stream();
+    }
+    
     close_camera();
 }
 
 cv::Mat TeliCam::get_last_frame()
 {
-    // last_frame_data.frame_mutex.lock();
-    return last_frame_data.frame.clone();
-    // last_frame_data.frame_mutex.unlock();
+    return last_frame.clone();
 }
 
 TeliCam::Parameters TeliCam::get_parameters() const
 {
     return parameters;
+}
+
+void TeliCam::print_system_info() const
+{
+    std::cout << "TeliCam API System info:" << std::endl;
+    std::cout << "  Driver version: " << sys_info.sU3vInfo.szDriverVersion << std::endl;
+    std::cout << "  API version: " << sys_info.sU3vInfo.szDllVersion << std::endl;
+    std::cout << "  Number of cameras: " << num_cameras << std::endl;
+}
+
+void TeliCam::print_camera_info() const
+{
+    std::cout << "TeliCam information:" << std::endl;
+    std::cout << "  Camera ID: " << cam_id << std::endl;
+    std::cout << "  Camera manufacturer: " << cam_info.szManufacturer << std::endl;
+    std::cout << "  Camera model: " << cam_info.szModelName << std::endl;
+    std::cout << "  Camera serial number: " << cam_info.szSerialNumber << std::endl;
 }
 
 void TeliCam::initialize_api()
@@ -242,13 +272,11 @@ void CallbackImageAcquired(Teli::CAM_HANDLE cam_handle, Teli::CAM_STRM_HANDLE ca
     Teli::ConvImage(Teli::DST_FMT_BGR24, image_info->uiPixelFormat, true, image.data, image_buffer, image_width,
                     image_height);
 
-    TeliCam::LastFrameData *last_frame_data = reinterpret_cast<TeliCam::LastFrameData *>(pvContext);
-    // last_frame_data->frame_mutex.lock();
-    last_frame_data->frame = image.clone();
-    // last_frame_data->frame_mutex.unlock();
+    cv::Mat* last_frame = reinterpret_cast<cv::Mat*>(pvContext);
+    *last_frame = image.clone();
 }
 
-void TeliCam::open_camera_stream()
+void TeliCam::open_stream()
 {
     Teli::CAM_API_STATUS cam_status = Teli::Strm_OpenSimple(cam_handle, &cam_stream_handle, &image_buffer_size);
     if (cam_status != Teli::CAM_API_STS_SUCCESS)
@@ -256,16 +284,26 @@ void TeliCam::open_camera_stream()
         throw std::runtime_error("Telicam Strm_OpenSimple failed");
     }
 
-    void *last_frame_data_ptr = reinterpret_cast<void *>(&last_frame_data);
-    cam_status = Teli::Strm_SetCallbackImageAcquired(cam_stream_handle, last_frame_data_ptr, CallbackImageAcquired);
+    void *last_frame_ptr = reinterpret_cast<void *>(&last_frame);
+    cam_status = Teli::Strm_SetCallbackImageAcquired(cam_stream_handle, last_frame_ptr, CallbackImageAcquired);
     if (cam_status != Teli::CAM_API_STS_SUCCESS)
     {
         throw std::runtime_error("Telicam Strm_SetCallbackImageAcquired failed");
     }
 }
 
-void TeliCam::start_stream()
+void TeliCam::capture_frame_internal()
 {
+    Teli::CAM_API_STATUS cam_status = Teli::Strm_Start(cam_stream_handle, Teli::CAM_ACQ_MODE_SINGLE_FRAME);
+    if (cam_status != Teli::CAM_API_STS_SUCCESS)
+    {
+        throw std::runtime_error("Telicam Strm_Start single-frame failed");
+    }
+}
+
+void TeliCam::start_stream_internal()
+{
+
     Teli::CAM_API_STATUS cam_status = Teli::Strm_Start(cam_stream_handle);
     if (cam_status != Teli::CAM_API_STS_SUCCESS)
     {
@@ -273,21 +311,12 @@ void TeliCam::start_stream()
     }
 }
 
-void TeliCam::stop_stream()
+void TeliCam::stop_stream_internal()
 {
     Teli::CAM_API_STATUS cam_status = Teli::Strm_Stop(cam_stream_handle);
     if (cam_status != Teli::CAM_API_STS_SUCCESS)
     {
         throw std::runtime_error("Telicam Strm_Stop failed");
-    }
-}
-
-void TeliCam::close_camera_stream()
-{
-    Teli::CAM_API_STATUS cam_status = Teli::Strm_Close(cam_stream_handle);
-    if (cam_status != Teli::CAM_API_STS_SUCCESS)
-    {
-        throw std::runtime_error("Telicam Strm_Close failed");
     }
 }
 
