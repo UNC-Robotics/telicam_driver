@@ -17,10 +17,12 @@ class TeliCam
         uint32_t height = 0; // Default is max height
         uint32_t offset_x = 0;
         uint32_t offset_y = 0;
+
         uint32_t binning_x = 0;
         uint32_t binning_y = 0;
         uint32_t decimation_x = 0;
         uint32_t decimation_y = 0;
+
         float64_t exposure_time = 25000.0f;
         float64_t saturation = 100.0f;
         float64_t gamma = 1.0f;
@@ -30,11 +32,12 @@ class TeliCam
         float64_t black_level = 0.0f;
         float64_t framerate = 30.0f;
         uint32_t sharpness = 0;
-        bool reverse_x = false;
-        bool reverse_y = false;
         float64_t balance_ratio_r = 4.0f;
         float64_t balance_ratio_b = 4.0f;
         bool auto_white_balance = true;
+
+        bool reverse_x = false;
+        bool reverse_y = false;
         bool trigger_mode = false;
     };
 
