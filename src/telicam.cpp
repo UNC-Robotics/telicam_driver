@@ -72,6 +72,11 @@ TeliCam::Parameters TeliCam::get_parameters() const
     return parameters;
 }
 
+TeliCam::SupportedFeatures TeliCam::get_supported_features() const
+{
+    return features;
+}
+
 void TeliCam::print_system_info() const
 {
     std::cout << "TeliCam API System info:" << std::endl;
@@ -202,15 +207,9 @@ void TeliCam::get_camera_parameter_limits()
     cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_RED, &min_balance_ratio_r, &max_balance_ratio_r);
     features.has_balance_ratio_r = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
-    // Print
-    std::cout << "Balance ratio R: " << min_balance_ratio_r << " - " << max_balance_ratio_r << std::endl;
-
     // Balance ratio B
     cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_BLUE, &min_balance_ratio_b, &max_balance_ratio_b);
     features.has_balance_ratio_b = (cam_status == Teli::CAM_API_STS_SUCCESS);
-
-    // Print
-    std::cout << "Balance ratio B: " << min_balance_ratio_b << " - " << max_balance_ratio_b << std::endl;
 }
 
 void TeliCam::set_camera_parameters(Parameters parameters)

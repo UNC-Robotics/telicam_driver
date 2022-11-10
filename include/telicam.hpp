@@ -116,6 +116,13 @@ class TeliCam
     Parameters get_parameters() const;
 
     /**
+     * @brief Get the TeliCam supported features.
+     * 
+     * @return SupportedFeatures TeliCam supported features.
+     */
+    SupportedFeatures get_supported_features() const;
+
+    /**
      * @brief Print TeliCam API system information.
      */
     void print_system_info() const;
