@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# Find OpenCV
+##################################################
+# Dependencies
+##################################################
+
+# OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -16,9 +20,14 @@ link_directories(${TELICAM_LIB_DIR})
 
 include_directories(include)
 
-# Source files
-set(SOURCE_FILES src/telicam.cpp src/main.cpp)
+################################################
+# Targets
+################################################
 
 # Executable
-add_executable(telicam_driver ${SOURCE_FILES})
-target_link_libraries(telicam_driver ${OpenCV_LIBS} TeliCamApi TeliCamApi_64 TeliCamUtl TeliCamUtl_64)
+add_executable(telicam_viewer src/telicam.cpp src/main.cpp)
+target_link_libraries(telicam_viewer ${OpenCV_LIBS} TeliCamApi_64 TeliCamUtl_64)
+
+# Library
+add_library(telicam SHARED src/telicam.cpp)
+target_link_libraries(telicam ${OpenCV_LIBS} TeliCamApi_64 TeliCamUtl_64)

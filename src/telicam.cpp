@@ -144,23 +144,73 @@ void TeliCam::open_camera()
 
 void TeliCam::get_camera_parameter_limits()
 {
+    Teli::CAM_API_STATUS cam_status;
+    
+    // Width
+    Teli::GetCamWidthMinMax(cam_handle, &min_width, &max_width, &width_inc);
+
+    // Height
+    Teli::GetCamHeightMinMax(cam_handle, &min_height, &max_height, &height_inc);
+
+    // Offset
+    Teli::GetCamOffsetXMinMax(cam_handle, &min_offset_x, &max_offset_x, &offset_x_inc);
+    Teli::GetCamOffsetYMinMax(cam_handle, &min_offset_y, &max_offset_y, &offset_y_inc);
+
+    // Binning
+    cam_status = Teli::GetCamBinningHorizontalMinMax(cam_handle, &min_binning_x, &max_binning_x);
+    cam_status = Teli::GetCamBinningVerticalMinMax(cam_handle, &min_binning_y, &max_binning_y);
+    features.has_binning = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
+    // Decimation
+    cam_status = Teli::GetCamDecimationHorizontalMinMax(cam_handle, &min_decimation_x, &max_decimation_x);
+    cam_status = Teli::GetCamDecimationVerticalMinMax(cam_handle, &min_decimation_y, &max_decimation_y);
+    features.has_decimation = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
     // Exposure
-    Teli::GetCamExposureTimeMinMax(cam_handle, &min_exposure_time, &max_exposure_time);
+    cam_status = Teli::GetCamExposureTimeMinMax(cam_handle, &min_exposure_time, &max_exposure_time);
+    features.has_exposure_time = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Saturation
-    Teli::GetCamSaturationMinMax(cam_handle, &min_saturation, &max_saturation);
+    cam_status = Teli::GetCamSaturationMinMax(cam_handle, &min_saturation, &max_saturation);
+    features.has_saturation = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Gamma
-    Teli::GetCamGammaMinMax(cam_handle, &min_gamma, &max_gamma);
+    cam_status = Teli::GetCamGammaMinMax(cam_handle, &min_gamma, &max_gamma);
+    features.has_gamma = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Hue
-    Teli::GetCamHueMinMax(cam_handle, &min_hue, &max_hue);
+    cam_status = Teli::GetCamHueMinMax(cam_handle, &min_hue, &max_hue);
+    features.has_hue = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Gain
-    Teli::GetCamGainMinMax(cam_handle, &min_gain, &max_gain);
+    cam_status = Teli::GetCamGainMinMax(cam_handle, &min_gain, &max_gain);
+    features.has_gain = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
+    // Black level
+    cam_status = Teli::GetCamBlackLevelMinMax(cam_handle, &min_black_level, &max_black_level);
+    features.has_black_level = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Framerate
-    Teli::GetCamAcquisitionFrameRateMinMax(cam_handle, &min_framerate, &max_framerate);
+    cam_status = Teli::GetCamAcquisitionFrameRateMinMax(cam_handle, &min_framerate, &max_framerate);
+    features.has_framerate = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
+    // Sharpness
+    cam_status = Teli::GetCamSharpnessMinMax(cam_handle, &min_sharpness, &max_sharpness);
+    features.has_sharpness = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
+    // Balance ratio R
+    cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_RED, &min_balance_ratio_r, &max_balance_ratio_r);
+    features.has_balance_ratio_r = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
+    // Print
+    std::cout << "Balance ratio R: " << min_balance_ratio_r << " - " << max_balance_ratio_r << std::endl;
+
+    // Balance ratio B
+    cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_BLUE, &min_balance_ratio_b, &max_balance_ratio_b);
+    features.has_balance_ratio_b = (cam_status == Teli::CAM_API_STS_SUCCESS);
+
+    // Print
+    std::cout << "Balance ratio B: " << min_balance_ratio_b << " - " << max_balance_ratio_b << std::endl;
 }
 
 void TeliCam::set_camera_parameters(Parameters parameters)
@@ -168,64 +218,236 @@ void TeliCam::set_camera_parameters(Parameters parameters)
     Teli::SetCamExposureTimeControl(cam_handle, Teli::CAM_EXPOSURE_TIME_CONTROL_MANUAL);
     Teli::SetCamAcquisitionFrameRateControl(cam_handle, Teli::CAM_ACQ_FRAME_RATE_CTRL_MANUAL);
 
-    // Exposure
-    if (parameters.exposure_time <= max_exposure_time && parameters.exposure_time >= min_exposure_time)
+    // Width
+    if (parameters.width == 0)
     {
-        Teli::SetCamExposureTime(cam_handle, parameters.exposure_time);
+        parameters.width = max_width;
+    }
+    if (parameters.width <= max_width && parameters.width >= min_width)
+    {
+        Teli::SetCamWidth(cam_handle, parameters.width);
     }
     else
     {
-        throw std::runtime_error("Exposure time out of range");
+        throw std::runtime_error("Width out of range");
+    }
+
+    // Height
+    if (parameters.height == 0)
+    {
+        parameters.height = max_height;
+    }
+    if (parameters.height <= max_height && parameters.height >= min_height)
+    {
+        Teli::SetCamHeight(cam_handle, parameters.height);
+    }
+    else
+    {
+        throw std::runtime_error("Height out of range");
+    }
+
+    // Offset X
+    if (parameters.offset_x <= max_offset_x && parameters.offset_x >= min_offset_x)
+    {
+        Teli::SetCamOffsetX(cam_handle, parameters.offset_x);
+    }
+    else
+    {
+        throw std::runtime_error("Offset X out of range");
+    }
+
+    // Offset Y
+    if (parameters.offset_y <= max_offset_y && parameters.offset_y >= min_offset_y)
+    {
+        Teli::SetCamOffsetY(cam_handle, parameters.offset_y);
+    }
+    else
+    {
+        throw std::runtime_error("Offset Y out of range");
+    }
+
+    // Binning
+    if (features.has_binning)
+    {
+        if (parameters.binning_x <= max_binning_x && parameters.binning_x >= min_binning_x)
+        {
+            Teli::SetCamBinningHorizontal(cam_handle, parameters.binning_x);
+        }
+        else
+        {
+            throw std::runtime_error("Binning X out of range");
+        }
+
+        if (parameters.binning_y <= max_binning_y && parameters.binning_y >= min_binning_y)
+        {
+            Teli::SetCamBinningVertical(cam_handle, parameters.binning_y);
+        }
+        else
+        {
+            throw std::runtime_error("Binning Y out of range");
+        }
+    }
+
+    // Decimation
+    if (features.has_decimation)
+    {
+        if (parameters.decimation_x <= max_decimation_x && parameters.decimation_x >= min_decimation_x)
+        {
+            Teli::SetCamDecimationHorizontal(cam_handle, parameters.decimation_x);
+        }
+        else
+        {
+            throw std::runtime_error("Decimation X out of range");
+        }
+
+        if (parameters.decimation_y <= max_decimation_y && parameters.decimation_y >= min_decimation_y)
+        {
+            Teli::SetCamDecimationVertical(cam_handle, parameters.decimation_y);
+        }
+        else
+        {
+            throw std::runtime_error("Decimation Y out of range");
+        }
+    }
+
+    // Exposure time
+    if (features.has_exposure_time)
+    {
+        if (parameters.exposure_time <= max_exposure_time && parameters.exposure_time >= min_exposure_time)
+        {
+            Teli::SetCamExposureTime(cam_handle, parameters.exposure_time);
+        }
+        else
+        {
+            throw std::runtime_error("Exposure time out of range");
+        }
     }
 
     // Saturation
-    if (parameters.saturation <= max_saturation && parameters.saturation >= min_saturation)
+    if (features.has_saturation)
     {
-        Teli::SetCamSaturation(cam_handle, parameters.saturation);
-    }
-    else
-    {
-        throw std::runtime_error("Saturation out of range");
+        if (parameters.saturation <= max_saturation && parameters.saturation >= min_saturation)
+        {
+            Teli::SetCamSaturation(cam_handle, parameters.saturation);
+        }
+        else
+        {
+            throw std::runtime_error("Saturation out of range");
+        }
     }
 
     // Gamma
-    if (parameters.gamma <= max_gamma && parameters.gamma >= min_gamma)
+    if (features.has_gamma)
     {
-        Teli::SetCamGamma(cam_handle, parameters.gamma);
-    }
-    else
-    {
-        throw std::runtime_error("Gamma out of range");
+        if (parameters.gamma <= max_gamma && parameters.gamma >= min_gamma)
+        {
+            Teli::SetCamGamma(cam_handle, parameters.gamma);
+        }
+        else
+        {
+            throw std::runtime_error("Gamma out of range");
+        }
     }
 
     // Hue
-    if (parameters.hue <= max_hue && parameters.hue >= min_hue)
+    if (features.has_hue)
     {
-        Teli::SetCamHue(cam_handle, parameters.hue);
-    }
-    else
-    {
-        throw std::runtime_error("Hue out of range");
+        if (parameters.hue <= max_hue && parameters.hue >= min_hue)
+        {
+            Teli::SetCamHue(cam_handle, parameters.hue);
+        }
+        else
+        {
+            throw std::runtime_error("Hue out of range");
+        }
     }
 
     // Gain
-    if (parameters.gain <= max_gain && parameters.gain >= min_gain)
+    if (features.has_gain)
     {
-        Teli::SetCamGain(cam_handle, parameters.gain);
+        if (parameters.gain <= max_gain && parameters.gain >= min_gain)
+        {
+            Teli::SetCamGain(cam_handle, parameters.gain);
+        }
+        else
+        {
+            throw std::runtime_error("Gain out of range");
+        }
     }
-    else
+
+    // Black level
+    if (features.has_black_level)
     {
-        throw std::runtime_error("Gain out of range");
+        if (parameters.black_level <= max_black_level && parameters.black_level >= min_black_level)
+        {
+            Teli::SetCamBlackLevel(cam_handle, parameters.black_level);
+        }
+        else
+        {
+            throw std::runtime_error("Black level out of range");
+        }
     }
 
     // Framerate
-    if (parameters.framerate <= max_framerate && parameters.framerate >= min_framerate)
+    if (features.has_framerate)
     {
-        Teli::SetCamAcquisitionFrameRate(cam_handle, parameters.framerate);
+        if (parameters.framerate <= max_framerate && parameters.framerate >= min_framerate)
+        {
+            Teli::SetCamAcquisitionFrameRate(cam_handle, parameters.framerate);
+        }
+        else
+        {
+            throw std::runtime_error("Framerate out of range");
+        }
     }
-    else
+
+    // Sharpness
+    if (features.has_sharpness)
     {
-        throw std::runtime_error("Framerate out of range");
+        if (parameters.sharpness <= max_sharpness && parameters.sharpness >= min_sharpness)
+        {
+            Teli::SetCamSharpness(cam_handle, parameters.sharpness);
+        }
+        else
+        {
+            throw std::runtime_error("Sharpness out of range");
+        }
+    }
+
+    // Reverse
+    if (features.has_reverse_x)
+    {
+        Teli::SetCamReverseX(cam_handle, parameters.reverse_x);
+    }
+    if (features.has_reverse_y)
+    {
+        Teli::SetCamReverseY(cam_handle, parameters.reverse_y);
+    }
+
+    // Balance ratio R
+    if (features.has_balance_ratio_r)
+    {
+        if (parameters.balance_ratio_r <= max_balance_ratio_r && parameters.balance_ratio_r >= min_balance_ratio_r)
+        {
+            Teli::SetCamBalanceRatio(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_RED, parameters.balance_ratio_r);
+        }
+        else
+        {
+            throw std::runtime_error("Balance ratio R out of range");
+        }
+    }
+
+    // Balance ratio B
+    if (features.has_balance_ratio_b)
+    {
+        if (parameters.balance_ratio_b <= max_balance_ratio_b && parameters.balance_ratio_b >= min_balance_ratio_b)
+        {
+            Teli::SetCamBalanceRatio(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_BLUE, parameters.balance_ratio_b);
+        }
+        else
+        {
+            throw std::runtime_error("Balance ratio B out of range");
+        }
     }
 
     // Auto-white balance
@@ -254,8 +476,10 @@ void TeliCam::set_camera_parameters(Parameters parameters)
 
 void TeliCam::get_camera_properties()
 {
-    Teli::GetCamSensorWidth(cam_handle, &width);
-    Teli::GetCamSensorHeight(cam_handle, &height);
+    Teli::GetCamWidth(cam_handle, &width);
+    Teli::GetCamHeight(cam_handle, &height);
+    Teli::GetCamSensorWidth(cam_handle, &sensor_width);
+    Teli::GetCamSensorHeight(cam_handle, &sensor_height);
     Teli::GetCamAcquisitionFrameRate(cam_handle, &framerate);
 }
 
@@ -289,6 +513,10 @@ void TeliCam::open_stream()
     {
         throw std::runtime_error("Telicam Strm_SetCallbackImageAcquired failed");
     }
+
+    // Print sensor width and height
+    std::cout << "Sensor width: " << sensor_width << std::endl;
+    std::cout << "Sensor height: " << sensor_height << std::endl;
 }
 
 void TeliCam::capture_frame_internal()
