@@ -41,7 +41,7 @@ include_directories(include)
 
 # Executable
 if(BUILD_VIEWER)
-    add_executable(telicam_viewer src/telicam.cpp src/main.cpp)
+    add_executable(telicam_viewer src/telicam.cpp src/telicam_viewer.cpp)
     target_link_libraries(telicam_viewer ${OpenCV_LIBS} TeliCamApi_64 TeliCamUtl_64 nlohmann_json::nlohmann_json CLI11::CLI11)
 endif()
 
