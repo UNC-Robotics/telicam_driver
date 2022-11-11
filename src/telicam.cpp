@@ -106,6 +106,34 @@ void TeliCam::print_camera_info() const
     std::cout << "  Camera serial number: " << cam_info.szSerialNumber << std::endl;
 }
 
+void TeliCam::print_parameters() const
+{
+    std::cout << "TeliCam parameters:" << std::endl;
+    std::cout << "  Width: " << parameters.width << std::endl;
+    std::cout << "  Height: " << parameters.height << std::endl;
+    std::cout << "  Offset X: " << parameters.offset_x << std::endl;
+    std::cout << "  Offset Y: " << parameters.offset_y << std::endl;
+    std::cout << "  Binning X: " << parameters.binning_x << std::endl;
+    std::cout << "  Binning Y: " << parameters.binning_y << std::endl;
+    std::cout << "  Decimation X: " << parameters.decimation_x << std::endl;
+    std::cout << "  Decimation Y: " << parameters.decimation_y << std::endl;
+    std::cout << "  Exposure time: " << parameters.exposure_time << std::endl;
+    std::cout << "  Saturation: " << parameters.saturation << std::endl;
+    std::cout << "  Gamma: " << parameters.gamma << std::endl;
+    std::cout << "  Hue: " << parameters.hue << std::endl;
+    std::cout << "  Gain: " << parameters.gain << std::endl;
+    std::cout << "  Auto gain: " << parameters.auto_gain << std::endl;
+    std::cout << "  Black level: " << parameters.black_level << std::endl;
+    std::cout << "  Framerate: " << parameters.framerate << std::endl;
+    std::cout << "  Sharpness: " << parameters.sharpness << std::endl;
+    std::cout << "  Balance ratio R: " << parameters.balance_ratio_r << std::endl;
+    std::cout << "  Balance ratio B: " << parameters.balance_ratio_b << std::endl;
+    std::cout << "  Auto white balance: " << parameters.auto_white_balance << std::endl;
+    std::cout << "  Reverse X: " << parameters.reverse_x << std::endl;
+    std::cout << "  Reverse Y: " << parameters.reverse_y << std::endl;
+    std::cout << "  Trigger mode: " << parameters.trigger_mode << std::endl;
+}
+
 void TeliCam::initialize_api()
 {
     if (api_initialized)

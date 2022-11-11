@@ -138,6 +138,11 @@ class TeliCam
      */
     void print_camera_info() const;
 
+    /**
+     * @brief Print TeliCam parameters.
+     */
+    void print_parameters() const;
+
   private:
     void get_system_info();
     void get_num_cameras();
