@@ -47,4 +47,4 @@ endif()
 # Library
 add_library(telicam SHARED src/telicam.cpp)
 target_link_libraries(telicam ${OpenCV_LIBS} TeliCamApi_64 TeliCamUtl_64)
-install(TARGETS telicam DESTINATION lib)
+install(TARGETS telicam DESTINATION lib PUBLIC_HEADER DESTINATION include)
