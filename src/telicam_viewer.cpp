@@ -3,6 +3,7 @@
 #include <random>
 #include <sstream>
 #include <thread>
+#include <filesystem>
 
 #include <opencv2/highgui/highgui.hpp>
 
@@ -100,6 +101,13 @@ int main(int argc, char **argv)
 
     CLI11_PARSE(app, argc, argv);
 
+    // Check if ./data exists, and if not create it
+    std::filesystem::path data_path("./data");
+    if (!std::filesystem::exists(data_path))
+    {
+        std::filesystem::create_directory(data_path);
+    }
+
     /////////////////////////////////////////////
     // Run TeliCam
     /////////////////////////////////////////////
@@ -138,8 +146,9 @@ int main(int argc, char **argv)
             // Write the last frame to disk as a JPG
             // Generate GUID
             std::string guid = uuid::generate_uuid_v4();
-            std::string filename = guid + ".jpg";
-            cv::imwrite(filename, cam.get_last_frame());
+            std::stringstream filename;
+            filename << "./data/" << guid << ".jpg";
+            cv::imwrite(filename.str(), cam.get_last_frame());
         }
     }
 
