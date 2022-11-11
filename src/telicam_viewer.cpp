@@ -1,11 +1,13 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <random>
+#include <sstream>
 #include <thread>
 
 #include <opencv2/highgui/highgui.hpp>
 
-#include <nlohmann/json.hpp>
 #include <CLI/CLI.hpp>
+#include <nlohmann/json.hpp>
 
 #include "telicam.hpp"
 
@@ -45,6 +47,43 @@ TeliCam::Parameters read_json(std::string filename)
     return params;
 }
 
+namespace uuid
+{
+static std::random_device rd;
+static std::mt19937 gen(rd());
+static std::uniform_int_distribution<> dis(0, 15);
+static std::uniform_int_distribution<> dis2(8, 11);
+
+std::string generate_uuid_v4()
+{
+    std::stringstream ss;
+    int i;
+    ss << std::hex;
+    for (i = 0; i < 8; i++)
+    {
+        ss << dis(gen);
+    }
+    for (i = 0; i < 4; i++)
+    {
+        ss << dis(gen);
+    }
+    for (i = 0; i < 3; i++)
+    {
+        ss << dis(gen);
+    }
+    ss << dis2(gen);
+    for (i = 0; i < 3; i++)
+    {
+        ss << dis(gen);
+    }
+    for (i = 0; i < 12; i++)
+    {
+        ss << dis(gen);
+    };
+    return ss.str();
+}
+} // namespace uuid
+
 int main(int argc, char **argv)
 {
     /////////////////////////////////////////////
@@ -57,8 +96,8 @@ int main(int argc, char **argv)
     bool capture_mode = false;
     app.add_option("--cam_id", cam_id, "Camera ID")->default_val(0);
     app.add_option("--config", config_filename, "Configuration file")->required()->check(CLI::ExistingFile);
-    app.add_flag("--capture", capture_mode, "Capture mode")->default_val(false);
-    
+    app.add_flag("--capture", capture_mode, "Capture mode");
+
     CLI11_PARSE(app, argc, argv);
 
     /////////////////////////////////////////////
@@ -91,6 +130,16 @@ int main(int argc, char **argv)
         if (capture_mode && key == 32)
         {
             cam.capture_frame();
+        }
+
+        // If key equals g
+        if (key == 103)
+        {
+            // Write the last frame to disk as a JPG
+            // Generate GUID
+            std::string guid = uuid::generate_uuid_v4();
+            std::string filename = guid + ".jpg";
+            cv::imwrite(filename, cam.get_last_frame());
         }
     }
 
