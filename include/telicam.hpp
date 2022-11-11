@@ -61,6 +61,7 @@ class TeliCam
     };
 
   public:
+    TeliCam();
     explicit TeliCam(int camera_index);
 
     /**

@@ -7,6 +7,10 @@ bool TeliCam::api_initialized = false;
 Teli::CAM_SYSTEM_INFO TeliCam::sys_info = Teli::CAM_SYSTEM_INFO();
 uint32_t TeliCam::num_cameras = 0;
 
+TeliCam::TeliCam() : cam_id(0), camera_initialized(false), camera_stream_opened(false)
+{
+}
+
 TeliCam::TeliCam(int camera_index) : cam_id(camera_index), camera_initialized(false), camera_stream_opened(false)
 {
 }
@@ -34,7 +38,8 @@ void TeliCam::initialize(const Parameters &parameters)
 
 void TeliCam::start_stream()
 {
-    if (camera_stream_opened) return;
+    if (camera_stream_opened)
+        return;
 
     start_stream_internal();
     camera_stream_opened = true;
@@ -47,7 +52,8 @@ void TeliCam::capture_frame()
 
 void TeliCam::stop_stream()
 {
-    if (!camera_stream_opened) return;
+    if (!camera_stream_opened)
+        return;
 
     stop_stream_internal();
 }
@@ -58,7 +64,7 @@ void TeliCam::destroy()
     {
         TeliCam::stop_stream();
     }
-    
+
     close_camera();
 }
 
@@ -150,7 +156,7 @@ void TeliCam::open_camera()
 void TeliCam::get_camera_parameter_limits()
 {
     Teli::CAM_API_STATUS cam_status;
-    
+
     // Width
     Teli::GetCamWidthMinMax(cam_handle, &min_width, &max_width, &width_inc);
 
@@ -204,11 +210,13 @@ void TeliCam::get_camera_parameter_limits()
     features.has_sharpness = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Balance ratio R
-    cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_RED, &min_balance_ratio_r, &max_balance_ratio_r);
+    cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_RED, &min_balance_ratio_r,
+                                                &max_balance_ratio_r);
     features.has_balance_ratio_r = (cam_status == Teli::CAM_API_STS_SUCCESS);
 
     // Balance ratio B
-    cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_BLUE, &min_balance_ratio_b, &max_balance_ratio_b);
+    cam_status = Teli::GetCamBalanceRatioMinMax(cam_handle, Teli::CAM_BALANCE_RATIO_SELECTOR_BLUE, &min_balance_ratio_b,
+                                                &max_balance_ratio_b);
     features.has_balance_ratio_b = (cam_status == Teli::CAM_API_STS_SUCCESS);
 }
 
@@ -494,7 +502,7 @@ void CallbackImageAcquired(Teli::CAM_HANDLE cam_handle, Teli::CAM_STRM_HANDLE ca
     Teli::ConvImage(Teli::DST_FMT_BGR24, image_info->uiPixelFormat, true, image.data, image_buffer, image_width,
                     image_height);
 
-    cv::Mat* last_frame = reinterpret_cast<cv::Mat*>(pvContext);
+    cv::Mat *last_frame = reinterpret_cast<cv::Mat *>(pvContext);
     *last_frame = image.clone();
 }
 
