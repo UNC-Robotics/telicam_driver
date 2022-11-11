@@ -1,6 +1,7 @@
 include(FetchContent)
 
-project(TELICAM_DRIVER)
+cmake_policy(SET CMP0048 NEW)
+project(TELICAM_DRIVER VERSION 1.0.0)
 cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -25,7 +26,8 @@ set(TELICAM_LIB_DIR "/opt/TeliCamSDK/lib")
 # JSON (for viewer)
 if(BUILD_VIEWER)
     FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
-    FetchContent_MakeAvailable(json)
+    FetchContent_Declare(cli11 URL https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.3.1.tar.gz)
+    FetchContent_MakeAvailable(json cli11)
 endif()
 
 include_directories(${TELICAM_INCLUDE_DIR})
@@ -40,7 +42,7 @@ include_directories(include)
 # Executable
 if(BUILD_VIEWER)
     add_executable(telicam_viewer src/telicam.cpp src/main.cpp)
-    target_link_libraries(telicam_viewer ${OpenCV_LIBS} TeliCamApi_64 TeliCamUtl_64 nlohmann_json::nlohmann_json)
+    target_link_libraries(telicam_viewer ${OpenCV_LIBS} TeliCamApi_64 TeliCamUtl_64 nlohmann_json::nlohmann_json CLI11::CLI11)
 endif()
 
 # Library

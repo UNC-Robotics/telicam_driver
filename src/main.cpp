@@ -5,6 +5,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <nlohmann/json.hpp>
+#include <CLI/CLI.hpp>
 
 #include "telicam.hpp"
 
@@ -46,17 +47,34 @@ TeliCam::Parameters read_json(std::string filename)
 
 int main(int argc, char **argv)
 {
-    std::cout << "Telicam driver" << std::endl;
+    /////////////////////////////////////////////
+    // Parse CLI arguments
+    /////////////////////////////////////////////
+    CLI::App app{"TeliCam viewer"};
 
+    std::string config_filename;
+    bool capture_mode = false;
+    app.add_option("--config", config_filename, "Configuration file")->required()->check(CLI::ExistingFile);
+    app.add_flag("--capture", capture_mode, "Capture mode");
+    
+    CLI11_PARSE(app, argc, argv);
+
+    /////////////////////////////////////////////
+    // Run TeliCam
+    /////////////////////////////////////////////
     TeliCam::initialize_api();
 
     TeliCam cam(0);
-    TeliCam::Parameters cam_params = read_json("params.json");
+    TeliCam::Parameters cam_params = read_json(config_filename);
 
     cam.initialize(cam_params);
     cam.print_system_info();
     cam.print_camera_info();
-    cam.start_stream();
+
+    if (!capture_mode)
+    {
+        cam.start_stream();
+    }
 
     cv::namedWindow("Telicam", cv::WINDOW_AUTOSIZE);
 
@@ -65,13 +83,13 @@ int main(int argc, char **argv)
     {
         cv::imshow("Telicam", cam.get_last_frame());
         key = cv::waitKey(1);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds((int)(1 / cam_params.framerate)));
 
-        // // If key equals spacebar
-        // if (key == 32)
-        // {
-        //     cam.capture_frame();
-        // }
+        // If key equals spacebar
+        if (capture_mode && key == 32)
+        {
+            cam.capture_frame();
+        }
     }
 
     cam.destroy();
