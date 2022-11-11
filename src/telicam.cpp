@@ -7,11 +7,12 @@ bool TeliCam::api_initialized = false;
 Teli::CAM_SYSTEM_INFO TeliCam::sys_info = Teli::CAM_SYSTEM_INFO();
 uint32_t TeliCam::num_cameras = 0;
 
-TeliCam::TeliCam() : cam_id(0), camera_initialized(false), camera_stream_opened(false)
+TeliCam::TeliCam() : cam_id(0), camera_initialized(false), streaming(false)
 {
 }
 
-TeliCam::TeliCam(int camera_index) : cam_id(camera_index), camera_initialized(false), camera_stream_opened(false)
+TeliCam::TeliCam(int camera_index)
+    : cam_id(camera_index), camera_initialized(false), streaming(false)
 {
 }
 
@@ -38,11 +39,11 @@ void TeliCam::initialize(const Parameters &parameters)
 
 void TeliCam::start_stream()
 {
-    if (camera_stream_opened)
+    if (streaming)
         return;
 
     start_stream_internal();
-    camera_stream_opened = true;
+    streaming = true;
 }
 
 void TeliCam::capture_frame()
@@ -52,7 +53,7 @@ void TeliCam::capture_frame()
 
 void TeliCam::stop_stream()
 {
-    if (!camera_stream_opened)
+    if (!streaming)
         return;
 
     stop_stream_internal();
@@ -60,12 +61,17 @@ void TeliCam::stop_stream()
 
 void TeliCam::destroy()
 {
-    if (camera_stream_opened)
+    if (streaming)
     {
         TeliCam::stop_stream();
     }
 
     close_camera();
+}
+
+bool TeliCam::is_streaming() const
+{
+    return streaming;
 }
 
 cv::Mat TeliCam::get_last_frame()

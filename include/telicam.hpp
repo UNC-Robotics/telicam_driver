@@ -103,6 +103,11 @@ class TeliCam
     void destroy();
 
     /**
+     * @brief Check if the TeliCam is streaming.
+     */
+    bool is_streaming() const;
+
+    /**
      * @brief Get the last captured frame from either continuous streaming or a single capture.
      * 
      * @return cv::Mat Last captured frame in OpenCV format
@@ -153,7 +158,7 @@ class TeliCam
     static uint32_t num_cameras;
 
     bool camera_initialized;
-    bool camera_stream_opened;
+    bool streaming;
 
     uint32_t cam_id;
     Teli::CAM_INFO cam_info;
