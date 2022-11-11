@@ -554,10 +554,6 @@ void TeliCam::open_stream()
     {
         throw std::runtime_error("Telicam Strm_SetCallbackImageAcquired failed");
     }
-
-    // Print sensor width and height
-    std::cout << "Sensor width: " << sensor_width << std::endl;
-    std::cout << "Sensor height: " << sensor_height << std::endl;
 }
 
 void TeliCam::capture_frame_internal()
