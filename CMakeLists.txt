@@ -1,5 +1,3 @@
-include(FetchContent)
-
 cmake_policy(SET CMP0048 NEW)
 project(TELICAM_DRIVER VERSION 1.0.0)
 cmake_minimum_required(VERSION 3.1)
@@ -25,6 +23,7 @@ set(TELICAM_LIB_DIR "/opt/TeliCamSDK/lib")
 
 # JSON (for viewer)
 if(BUILD_VIEWER)
+    include(FetchContent)
     FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
     FetchContent_Declare(cli11 URL https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.3.1.tar.gz)
     FetchContent_MakeAvailable(json cli11)
