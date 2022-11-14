@@ -256,6 +256,8 @@ void TeliCam::get_camera_parameter_limits()
 
 void TeliCam::set_camera_parameters(Parameters parameters)
 {
+    this->parameters = parameters;
+    
     Teli::SetCamExposureTimeControl(cam_handle, Teli::CAM_EXPOSURE_TIME_CONTROL_MANUAL);
     Teli::SetCamAcquisitionFrameRateControl(cam_handle, Teli::CAM_ACQ_FRAME_RATE_CTRL_MANUAL);
 
