@@ -4,6 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/build/_deps/json-src/include",
+                "${workspaceFolder}/build/_deps/cli11-src/include",
                 "/opt/TeliCamSDK/include",
                 "/usr/include/opencv4"
             ],
