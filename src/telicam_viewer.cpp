@@ -53,9 +53,11 @@ int main(int argc, char **argv)
     CLI::App app{"TeliCam viewer"};
 
     std::string config_filename;
+    int cam_id = 0;
     bool capture_mode = false;
+    app.add_option("--cam_id", cam_id, "Camera ID")->default_val(0);
     app.add_option("--config", config_filename, "Configuration file")->required()->check(CLI::ExistingFile);
-    app.add_flag("--capture", capture_mode, "Capture mode");
+    app.add_flag("--capture", capture_mode, "Capture mode")->default_val(false);
     
     CLI11_PARSE(app, argc, argv);
 
@@ -64,7 +66,7 @@ int main(int argc, char **argv)
     /////////////////////////////////////////////
     TeliCam::initialize_api();
 
-    TeliCam cam(0);
+    TeliCam cam(cam_id);
     TeliCam::Parameters cam_params = read_json(config_filename);
 
     cam.initialize(cam_params);
