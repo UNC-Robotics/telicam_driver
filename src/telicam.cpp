@@ -89,6 +89,16 @@ TeliCam::SupportedFeatures TeliCam::get_supported_features() const
     return features;
 }
 
+uint32_t TeliCam::get_sensor_width() const
+{
+    return sensor_width;
+}
+
+uint32_t TeliCam::get_sensor_height() const
+{
+    return sensor_height;
+}
+
 void TeliCam::print_system_info() const
 {
     std::cout << "TeliCam API System info:" << std::endl;
@@ -272,7 +282,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
     }
     else
     {
-        throw std::runtime_error("Width out of range");
+        std::stringstream ss;
+        ss << "Width out of range. Min: " << min_width << " Max: " << max_width;
+        throw std::runtime_error(ss.str());
     }
 
     // Height
@@ -286,7 +298,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
     }
     else
     {
-        throw std::runtime_error("Height out of range");
+        std::stringstream ss;
+        ss << "Height out of range. Min: " << min_height << " Max: " << max_height;
+        throw std::runtime_error(ss.str());
     }
 
     // Offset X
@@ -296,7 +310,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
     }
     else
     {
-        throw std::runtime_error("Offset X out of range");
+        std::stringstream ss;
+        ss << "Offset X out of range. Min: " << min_offset_x << " Max: " << max_offset_x;
+        throw std::runtime_error(ss.str());
     }
 
     // Offset Y
@@ -306,7 +322,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
     }
     else
     {
-        throw std::runtime_error("Offset Y out of range");
+        std::stringstream ss;
+        ss << "Offset Y out of range. Min: " << min_offset_y << " Max: " << max_offset_y;
+        throw std::runtime_error(ss.str());
     }
 
     // Binning
@@ -318,7 +336,10 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Binning X out of range");
+            // Print out of range and range
+            std::stringstream ss;
+            ss << "Binning X out of range. Min: " << min_binning_x << " Max: " << max_binning_x;
+            throw std::runtime_error(ss.str());
         }
 
         if (parameters.binning_y <= max_binning_y && parameters.binning_y >= min_binning_y)
@@ -327,7 +348,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Binning Y out of range");
+            std::stringstream ss;
+            ss << "Binning Y out of range. Min: " << min_binning_y << " Max: " << max_binning_y;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -340,7 +363,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Decimation X out of range");
+            std::stringstream ss;
+            ss << "Decimation X out of range. Min: " << min_decimation_x << " Max: " << max_decimation_x;
+            throw std::runtime_error(ss.str());
         }
 
         if (parameters.decimation_y <= max_decimation_y && parameters.decimation_y >= min_decimation_y)
@@ -349,7 +374,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Decimation Y out of range");
+            std::stringstream ss;
+            ss << "Decimation Y out of range. Min: " << min_decimation_y << " Max: " << max_decimation_y;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -362,7 +389,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Exposure time out of range");
+            std::stringstream ss;
+            ss << "Exposure time out of range. Min: " << min_exposure_time << " Max: " << max_exposure_time;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -375,7 +404,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Saturation out of range");
+            std::stringstream ss;
+            ss << "Saturation out of range. Min: " << min_saturation << " Max: " << max_saturation;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -388,7 +419,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Gamma out of range");
+            std::stringstream ss;
+            ss << "Gamma out of range. Min: " << min_gamma << " Max: " << max_gamma;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -401,7 +434,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Hue out of range");
+            std::stringstream ss;
+            ss << "Hue out of range. Min: " << min_hue << " Max: " << max_hue;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -414,7 +449,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Gain out of range");
+            std::stringstream ss;
+            ss << "Gain out of range. Min: " << min_gain << " Max: " << max_gain;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -427,7 +464,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Black level out of range");
+            std::stringstream ss;
+            ss << "Black level out of range. Min: " << min_black_level << " Max: " << max_black_level;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -440,7 +479,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Framerate out of range");
+            std::stringstream ss;
+            ss << "Framerate out of range. Min: " << min_framerate << " Max: " << max_framerate;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -453,7 +494,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Sharpness out of range");
+            std::stringstream ss;
+            ss << "Sharpness out of range. Min: " << min_sharpness << " Max: " << max_sharpness;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -476,7 +519,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Balance ratio R out of range");
+            std::stringstream ss;
+            ss << "Balance ratio R out of range. Min: " << min_balance_ratio_r << " Max: " << max_balance_ratio_r;
+            throw std::runtime_error(ss.str());
         }
     }
 
@@ -489,7 +534,9 @@ void TeliCam::set_camera_parameters(Parameters parameters)
         }
         else
         {
-            throw std::runtime_error("Balance ratio B out of range");
+            std::stringstream ss;
+            ss << "Balance ratio B out of range. Min: " << min_balance_ratio_b << " Max: " << max_balance_ratio_b;
+            throw std::runtime_error(ss.str());
         }
     }
 

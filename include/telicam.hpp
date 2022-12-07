@@ -129,6 +129,20 @@ class TeliCam
     SupportedFeatures get_supported_features() const;
 
     /**
+     * @brief Get the sensor width
+     * 
+     * @return uint32_t Sensor width
+     */
+    uint32_t get_sensor_width() const;
+
+    /**
+     * @brief Get the sensor height
+     * 
+     * @return uint32_t 
+     */
+    uint32_t get_sensor_height() const;
+
+    /**
      * @brief Print TeliCam API system information.
      */
     void print_system_info() const;
