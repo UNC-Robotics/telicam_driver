@@ -1,0 +1,17 @@
+---
+BasedOnStyle: Microsoft
+AlignTrailingComments: 'true'
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: '120'
+IncludeBlocks: Preserve
+IndentCaseLabels: 'true'
+IndentPPDirectives: BeforeHash
+IndentWidth: '4'
+Language: Cpp
+PointerAlignment: Left
+SortIncludes: 'false'
+SpaceAfterTemplateKeyword: 'false'
+TabWidth: '4'
+UseTab: Never
+AlwaysBreakTemplateDeclarations: 'Yes'
+...

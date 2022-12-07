@@ -13,7 +13,7 @@ class TeliCam
   public:
     struct Parameters
     {
-        uint32_t width = 0; // Default is max width
+        uint32_t width = 0;  // Default is max width
         uint32_t height = 0; // Default is max height
         uint32_t offset_x = 0;
         uint32_t offset_y = 0;
@@ -43,21 +43,21 @@ class TeliCam
 
     struct SupportedFeatures
     {
-      bool has_binning;
-      bool has_decimation;
-      bool has_exposure_time;
-      bool has_saturation;
-      bool has_gamma;
-      bool has_hue;
-      bool has_gain;
-      bool has_auto_gain;
-      bool has_black_level;
-      bool has_framerate;
-      bool has_sharpness;
-      bool has_reverse_x;
-      bool has_reverse_y;
-      bool has_balance_ratio_r;
-      bool has_balance_ratio_b;
+        bool has_binning;
+        bool has_decimation;
+        bool has_exposure_time;
+        bool has_saturation;
+        bool has_gamma;
+        bool has_hue;
+        bool has_gain;
+        bool has_auto_gain;
+        bool has_black_level;
+        bool has_framerate;
+        bool has_sharpness;
+        bool has_reverse_x;
+        bool has_reverse_y;
+        bool has_balance_ratio_r;
+        bool has_balance_ratio_b;
     };
 
   public:
@@ -76,14 +76,14 @@ class TeliCam
 
     /**
      * @brief Initialize the TeliCam with the given parameters.
-     * 
+     *
      * @param parameters TeliCam parameters
      */
-    void initialize(const Parameters &parameters);
+    void initialize(const Parameters& parameters);
 
     /**
      * @brief Start continuous streaming from the TeliCam.
-     */ 
+     */
     void start_stream();
 
     /**
@@ -93,7 +93,7 @@ class TeliCam
 
     /**
      * @brief Stop continuous streaming from the TeliCam.
-     * 
+     *
      */
     void stop_stream();
 
@@ -109,21 +109,21 @@ class TeliCam
 
     /**
      * @brief Get the last captured frame from either continuous streaming or a single capture.
-     * 
+     *
      * @return cv::Mat Last captured frame in OpenCV format
      */
     cv::Mat get_last_frame();
 
     /**
      * @brief Get the TeliCam parameters.
-     * 
+     *
      * @return Parameters TeliCam parameters.
      */
     Parameters get_parameters() const;
 
     /**
      * @brief Get the TeliCam supported features.
-     * 
+     *
      * @return SupportedFeatures TeliCam supported features.
      */
     SupportedFeatures get_supported_features() const;
@@ -187,7 +187,7 @@ class TeliCam
 
     uint32_t width;
     uint32_t height;
-    uint32_t sensor_width;    
+    uint32_t sensor_width;
     uint32_t sensor_height;
     float64_t framerate;
     uint32_t image_buffer_size;

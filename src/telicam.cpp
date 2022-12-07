@@ -7,16 +7,21 @@ bool TeliCam::api_initialized = false;
 Teli::CAM_SYSTEM_INFO TeliCam::sys_info = Teli::CAM_SYSTEM_INFO();
 uint32_t TeliCam::num_cameras = 0;
 
-TeliCam::TeliCam() : cam_id(0), camera_initialized(false), streaming(false)
+TeliCam::TeliCam()
+    : cam_id(0)
+    , camera_initialized(false)
+    , streaming(false)
 {
 }
 
 TeliCam::TeliCam(int camera_index)
-    : cam_id(camera_index), camera_initialized(false), streaming(false)
+    : cam_id(camera_index)
+    , camera_initialized(false)
+    , streaming(false)
 {
 }
 
-void TeliCam::initialize(const Parameters &parameters)
+void TeliCam::initialize(const Parameters& parameters)
 {
     if (camera_initialized)
     {
@@ -267,7 +272,7 @@ void TeliCam::get_camera_parameter_limits()
 void TeliCam::set_camera_parameters(Parameters parameters)
 {
     this->parameters = parameters;
-    
+
     Teli::SetCamExposureTimeControl(cam_handle, Teli::CAM_EXPOSURE_TIME_CONTROL_MANUAL);
     Teli::SetCamAcquisitionFrameRateControl(cam_handle, Teli::CAM_ACQ_FRAME_RATE_CTRL_MANUAL);
 
@@ -577,9 +582,9 @@ void TeliCam::get_camera_properties()
 }
 
 void CallbackImageAcquired(Teli::CAM_HANDLE cam_handle, Teli::CAM_STRM_HANDLE cam_stream_handle,
-                           Teli::CAM_IMAGE_INFO *image_info, uint32_t buffer_index, void *pvContext)
+                           Teli::CAM_IMAGE_INFO* image_info, uint32_t buffer_index, void* pvContext)
 {
-    uint8_t *image_buffer = (uint8_t *)image_info->pvBuf;
+    uint8_t* image_buffer = (uint8_t*)image_info->pvBuf;
 
     uint32_t image_width = image_info->uiSizeX;
     uint32_t image_height = image_info->uiSizeY;
@@ -588,7 +593,7 @@ void CallbackImageAcquired(Teli::CAM_HANDLE cam_handle, Teli::CAM_STRM_HANDLE ca
     Teli::ConvImage(Teli::DST_FMT_BGR24, image_info->uiPixelFormat, true, image.data, image_buffer, image_width,
                     image_height);
 
-    cv::Mat *last_frame = reinterpret_cast<cv::Mat *>(pvContext);
+    cv::Mat* last_frame = reinterpret_cast<cv::Mat*>(pvContext);
     *last_frame = image.clone();
 }
 
@@ -600,7 +605,7 @@ void TeliCam::open_stream()
         throw std::runtime_error("Telicam Strm_OpenSimple failed");
     }
 
-    void *last_frame_ptr = reinterpret_cast<void *>(&last_frame);
+    void* last_frame_ptr = reinterpret_cast<void*>(&last_frame);
     cam_status = Teli::Strm_SetCallbackImageAcquired(cam_stream_handle, last_frame_ptr, CallbackImageAcquired);
     if (cam_status != Teli::CAM_API_STS_SUCCESS)
     {
