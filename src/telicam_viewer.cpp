@@ -5,6 +5,8 @@
 #include <thread>
 #include <filesystem>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 #include <CLI/CLI.hpp>
@@ -113,31 +115,45 @@ int main(int argc, char **argv)
     /////////////////////////////////////////////
     TeliCam::initialize_api();
 
-    TeliCam cam(cam_id);
+    TeliCam cam0(0);
+    TeliCam cam1(1);
     TeliCam::Parameters cam_params = read_json(config_filename);
 
-    cam.initialize(cam_params);
-    cam.print_system_info();
-    cam.print_camera_info();
+    cam0.initialize(cam_params);
+    cam1.initialize(cam_params);
 
     if (!capture_mode)
     {
-        cam.start_stream();
+        cam0.start_stream();
+        cam1.start_stream();
     }
 
-    cv::namedWindow("Telicam", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("Telicam", cv::WINDOW_NORMAL);
+    cam0.print_system_info();
+    cam0.print_camera_info();
+    cam0.print_parameters();
 
     char key = 0;
     while (key != 27)
     {
-        cv::imshow("Telicam", cam.get_last_frame());
+        cv::Mat frame0 = cam0.get_last_frame();
+        cv::Mat frame1 = cam1.get_last_frame();
+        // Resize to 720p
+        cv::resize(frame0, frame0, cv::Size(1024, 768));
+        cv::resize(frame1, frame1, cv::Size(1024, 768));
+
+        // Dislay side by side
+        cv::Mat frame;
+        cv::hconcat(frame0, frame1, frame);
+        cv::imshow("Telicam", frame);
         key = cv::waitKey(1);
         std::this_thread::sleep_for(std::chrono::milliseconds((int)(1 / cam_params.framerate)));
 
         // If key equals spacebar
         if (capture_mode && key == 32)
         {
-            cam.capture_frame();
+            cam0.capture_frame();
+            cam1.capture_frame();
         }
 
         // If key equals g
@@ -148,11 +164,12 @@ int main(int argc, char **argv)
             std::string guid = uuid::generate_uuid_v4();
             std::stringstream filename;
             filename << "./data/" << guid << ".jpg";
-            cv::imwrite(filename.str(), cam.get_last_frame());
+            cv::imwrite(filename.str(), cam0.get_last_frame());
         }
     }
 
-    cam.destroy();
+    cam0.destroy();
+    cam1.destroy();
 
     TeliCam::close_api();
 

@@ -570,6 +570,9 @@ void TeliCam::get_camera_properties()
     Teli::GetCamHeight(cam_handle, &height);
     Teli::GetCamSensorWidth(cam_handle, &sensor_width);
     Teli::GetCamSensorHeight(cam_handle, &sensor_height);
+    // Print sensor width and height
+    std::cout << "Sensor width: " << sensor_width << std::endl;
+    std::cout << "Sensor height: " << sensor_height << std::endl;
     Teli::GetCamAcquisitionFrameRate(cam_handle, &framerate);
 }
 
