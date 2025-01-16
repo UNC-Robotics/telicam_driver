@@ -57,28 +57,66 @@ The TeliCam Viewer application can be launched as such:
 It takes as input a JSON file containing the parameters for the camera. Below is an example:
 ```json
 {
-    "width": 0,
-    "height": 0,
-    "offset_x": 0,
-    "offset_y": 0,
-    "binning_x": 0,
-    "binning_y": 0,
-    "decimation_x": 0,
-    "decimation_y": 0,
-    "exposure_time": 25000.0,
-    "saturation": 100.0,
-    "gamma": 1.0,
-    "hue": 0.0,
-    "gain": 0.0,
-    "auto_gain": false,
-    "black_level": 0.0,
-    "framerate": 30.0,
-    "sharpness": 0,
-    "balance_ratio_r": 4.0,
-    "balance_ratio_b": 4.0,
-    "auto_white_balance": true,
-    "reverse_x": false,
-    "reverse_y": false,
-    "trigger_mode": false
+    "cameras": [
+        {
+            "cam_id": 0,
+            "params": {
+                "width": 0,
+                "height": 0,
+                "offset_x": 0,
+                "offset_y": 0,
+                "binning_x": 1,
+                "binning_y": 1,
+                "decimation_x": 2,
+                "decimation_y": 2,
+                "exposure_time": 15000.0,
+                "saturation": 100.0,
+                "gamma": 1.0,
+                "hue": 0.0,
+                "gain": 2.0,
+                "auto_gain": false,
+                "black_level": 0.0,
+                "framerate": 15.0,
+                "sharpness": 0,
+                "balance_ratio_r": 4.0,
+                "balance_ratio_b": 4.0,
+                "auto_white_balance": true,
+                "reverse_x": false,
+                "reverse_y": false,
+                "trigger_mode": false
+            },
+            "downscale_factor": 2
+        },
+        {
+            "cam_id": 1,
+            "params": {
+                "width": 0,
+                "height": 0,
+                "offset_x": 0,
+                "offset_y": 0,
+                "binning_x": 1,
+                "binning_y": 1,
+                "decimation_x": 2,
+                "decimation_y": 2,
+                "exposure_time": 15000.0,
+                "saturation": 100.0,
+                "gamma": 1.0,
+                "hue": 0.0,
+                "gain": 2.0,
+                "auto_gain": false,
+                "black_level": 0.0,
+                "framerate": 15.0,
+                "sharpness": 0,
+                "balance_ratio_r": 4.0,
+                "balance_ratio_b": 4.0,
+                "auto_white_balance": true,
+                "reverse_x": false,
+                "reverse_y": false,
+                "trigger_mode": false
+            },
+            "downscale_factor": 2
+        }
+    ]
 }
+
 ```
